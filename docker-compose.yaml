@@ -28,9 +28,25 @@ services:
     volumes:
       - postgresql-data:/var/lib/postgresql/data
 
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: fm.maghraoui@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - main
+    restart: unless-stopped
+
   app:
     build: .
-    command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn mysite.wsgi -b 0.0.0.0:8000"
+    command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn coreapp.wsgi -b 0.0.0.0:8000"
     container_name: app
     depends_on:
       - postgres
@@ -44,7 +60,7 @@ services:
     restart: on-failure
 
   celery_worker:
-    command: sh -c "celery -A mysite worker -l info"
+    command: sh -c "celery -A coreapp worker -l info"
     container_name: celery_worker
     depends_on:
       - app
@@ -62,7 +78,7 @@ services:
     restart: on-failure
 
   celery_beat:
-    command: sh -c "celery -A mysite beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    command: sh -c "celery -A coreapp beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     container_name: celery_beat
     depends_on:
       - app
@@ -79,3 +95,4 @@ networks:
 
 volumes:
   postgresql-data:
+  pgadmin:

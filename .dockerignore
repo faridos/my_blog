@@ -1,6 +1,4 @@
 *
-!mysite
-!polls
+!coreapp
 !manage.py
 !requirements.txt
-!wait-for
