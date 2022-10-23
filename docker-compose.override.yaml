@@ -7,4 +7,4 @@ services:
     ports:
       - "8008:8000"
     volumes:
-      - .:/app
+      - .:/app  # just in dev

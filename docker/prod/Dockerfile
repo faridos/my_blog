@@ -8,11 +8,10 @@ RUN mkdir -p /app
 WORKDIR /app
 COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt
-
+RUN pip install --no-cache-dir -r requirements/prod.in
 # Remove dependencies only required for psycopg2 build
 RUN apk del .build-deps
 
 EXPOSE 8000
 
-CMD ["gunicorn", "mysite.wsgi", "0:8000"]
+CMD ["gunicorn", "coreapp.wsgi", "0:8000"]

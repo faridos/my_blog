@@ -45,7 +45,9 @@ services:
     restart: unless-stopped
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
     command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn coreapp.wsgi -b 0.0.0.0:8000"
     container_name: app
     depends_on:
