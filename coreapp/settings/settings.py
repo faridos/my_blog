@@ -135,4 +135,4 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=5),
     },
 }
-MONITORING_SERVICE_URL = 'http://localhost:5000/'
+MONITORING_SERVICE_URL = 'http://monitoring_service:5000/'

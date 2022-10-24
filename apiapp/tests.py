@@ -4,9 +4,13 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from django.conf import settings
 import random
-
-PULL_DATA_URL = reverse('apiapp:pull_data_ms')
+from apiapp.models import Plant
+import datetime
+import json
+import requests
+# PULL_DATA_URL = reverse('apiapp:pull_data_ms')
 MONITORING_SERVICE_URL = settings.MONITORING_SERVICE_URL
+TODAY = datetime.date.today()
 
 
 class MonitoringServiceTests(TestCase):
@@ -34,6 +38,12 @@ def dummy_plant():
     }
 
 
+def create_dummy_query_params(plant_id):
+    thirty_days_ago = TODAY - datetime.timedelta(30)
+    query_params = f"?plant-id={plant_id}&from={thirty_days_ago}&to={TODAY}"
+    return query_params
+
+
 class DataPointApiTests(TestCase):
     """test all Datapoint Apis"""
 
@@ -41,10 +51,12 @@ class DataPointApiTests(TestCase):
         self.client = APIClient()
 
     def test_needed_params(self):
-        """Test Monitoring service response  if it's  list of json objects/dictio"""
+        """Test Monitoring service response """
 
-        plant_ins = Plant.objects.get_or_create(id=1, defaults=dummy_plant())
-        res = self.client.get(PULL_DATA_URL)
-        print(type(res))
+        plant_ins = Plant.objects.get_or_create(id=2, defaults=dummy_plant())
+        query_params = create_dummy_query_params(plant_ins[0].id)
+        print(MONITORING_SERVICE_URL + query_params)
+        # res = self.client.get(MONITORING_SERVICE_URL + query_params)
+        res = requests.get('http://monitoring_service:5000/?plant-id=2&from=2022-09-24&to=2022-10-22')
+2        # print(json.loads(res).content)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(type(res), dict)

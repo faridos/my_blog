@@ -8,3 +8,15 @@ services:
       - "8008:8000"
     volumes:
       - .:/app  # just in dev
+    depends_on:
+      - monitoring
+      - postgres
+      - rabbitmq
+
+  monitoring:
+    image: 3megawatt/dev-recruiting-challenge-monitor
+    ports:
+      - 5000:5000
+    networks:
+      - main
+    hostname: monitoring_service
