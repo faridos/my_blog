@@ -66,8 +66,10 @@ services:
     container_name: celery_worker
     depends_on:
       - app
-      - postgres
-      - rabbitmq
+#      - postgres
+#      - rabbitmq
+    volumes:
+      - .:/app
     deploy:
       replicas: 1
       restart_policy:
@@ -84,8 +86,10 @@ services:
     container_name: celery_beat
     depends_on:
       - app
-      - postgres
-      - rabbitmq
+#      - postgres
+#      - rabbitmq
+    volumes:
+      - .:/app
     hostname: celery_beat
     image: app-image
     networks:

@@ -1,5 +1,8 @@
-Django
-celery
-django-celery-beat
-django-celery-results
-psycopg2
+Django==3.2.16
+celery==5.2.7
+djangorestframework==3.14.0
+django-celery-beat==2.4.0
+django-celery-results==2.4.0
+psycopg2==2.9.4
+psycopg2-binary==2.9.4
+

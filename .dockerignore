@@ -1,4 +1,8 @@
 *
 !coreapp
+!apiapp
 !manage.py
 !requirements
+!makefile
+!nginx.conf
+

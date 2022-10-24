@@ -1,2 +1,2 @@
 -r base.in
-gunicorn
+gunicorn==20.1.0
