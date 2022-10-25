@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_beat',
     'django_celery_results',
-
+    'rest_framework',
     'apiapp',
 ]
 
@@ -131,8 +131,12 @@ CELERY_BROKER_URL = 'pyamqp://rabbitmq:5672'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULE = {
     'queue_every_five_mins': {
-        'task': 'polls.tasks.query_every_five_mins',
-        'schedule': crontab(minute=5),
+        'task': 'apiapp.tasks.query_ms_every_day',
+        'schedule': crontab(minute=3),
     },
 }
 MONITORING_SERVICE_URL = 'http://monitoring_service:5000/'
+# MONITORING_SERVICE_URL = 'http://localhost:5000/'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost']

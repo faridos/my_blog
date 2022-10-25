@@ -6,8 +6,8 @@ services:
     container_name: rabbitmq
     hostname: rabbitmq
     image: rabbitmq:latest
-    networks:
-      - main
+#    networks:
+#      - main
     ports:
       - "5672:5672"
     restart: on-failure
@@ -20,8 +20,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    networks:
-      - main
+#    networks:
+#      - main
     ports:
       - "5432:5432"
     restart: on-failure
@@ -40,8 +40,8 @@ services:
 
     ports:
       - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - main
+#    networks:
+#      - main
     restart: unless-stopped
 
   app:
@@ -57,8 +57,8 @@ services:
       - "8000"
     hostname: app
     image: app-image
-    networks:
-      - main
+#    networks:
+#      - main
     restart: on-failure
 
   celery_worker:
@@ -77,8 +77,8 @@ services:
 
     hostname: celery_worker
     image: app-image
-    networks:
-      - main
+#    networks:
+#      - main
     restart: on-failure
 
   celery_beat:
@@ -92,13 +92,18 @@ services:
       - .:/app
     hostname: celery_beat
     image: app-image
-    networks:
-      - main
+#    networks:
+#      - main
     restart: on-failure
 
-networks:
-  main:
+#networks:
+#  main:
 
 volumes:
   postgresql-data:
   pgadmin:
+
+networks:
+  host:
+    name: farid_maghraoui_challenge_network
+    external: true
