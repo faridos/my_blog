@@ -78,7 +78,7 @@ class DataPointApiTests(TestCase):
         else:
             assert "error" in res
 
-    def test_ create_update_datapoints(self):
+    def test_create_update_datapoints(self):
         """
         its tricky here , we need to separate create list from update list and run bulk_create and bulk_update separately
         :return:
