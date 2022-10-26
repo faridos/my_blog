@@ -1,22 +1,24 @@
 from django.conf import settings
-import datetime
+from datetime import date, timedelta
 from apiapp.models import DataPoint
 import requests
-import json
-TODAY = datetime.date.today()
+
+TODAY = date.today()
+YESTERDAY = (date.today() - timedelta(days=1)).isoformat()
 
 
-def get_data_ms(url, plant_id):
+def create_query_params(plant_id, from_date=None, to_date=None):
+    # TODO we assume here datas are isoformat?
+    from_x_days_ago = from_date if from_date else TODAY - timedelta(1)
+    to_date = to_date if to_date else TODAY
+    query_params = f"?plant-id={plant_id}&from={from_x_days_ago}&to={to_date}"
+    return query_params
+
+
+def get_data_ms_for_test(url, plant_id):
     query_params = create_query_params(plant_id)
     res_raw = requests.get(url + query_params)
-    res = json.loads(res_raw.content)
-    return res
-
-
-def create_query_params(plant_id):
-    thirty_days_ago = TODAY - datetime.timedelta(30)
-    query_params = f"?plant-id={plant_id}&from={thirty_days_ago}&to={TODAY}"
-    return query_params
+    return res_raw
 
 
 def get_it_splitted(data_datetime):
@@ -53,7 +55,6 @@ def get_organized_data(plant_id, ms_data=None):
     # assuming we know the structure of the MS response,
     # TODO needs refactoring when fields mapping is needed
     for data_row in ms_data:
-
         data_obj = {}
         date_time_dict = get_it_splitted(data_row['datetime'])
         data_obj['energy_expected'] = data_row['expected']['energy']
@@ -65,20 +66,20 @@ def get_organized_data(plant_id, ms_data=None):
     return new_data
 
 
-def get_update_create_data_to_save(organized_data=None):
+def get_update_create_data_to_save(plant_id, organized_data=None):
     if organized_data is None:
         organized_data = []
     records = [
         {
             "id": DataPoint.objects.filter(
-                plant=record.get("plant"),
+                plant=plant_id,
                 data_date=record.get("data_date"),
                 data_hour=record.get("data_hour")
             )
                 .first()
                 .id
             if DataPoint.objects.filter(
-                plant=record.get("plant"),
+                plant=plant_id,
                 data_date=record.get("data_date"),
                 data_hour=record.get("data_hour")
             ).first()

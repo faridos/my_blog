@@ -130,7 +130,7 @@ STATIC_ROOT = '/static'
 CELERY_BROKER_URL = 'pyamqp://rabbitmq:5672'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULE = {
-    'queue_every_five_mins': {
+    'q_every_day': {
         'task': 'apiapp.tasks.query_ms_every_day',
         'schedule': crontab(minute=3),
     },

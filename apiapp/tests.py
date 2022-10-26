@@ -7,20 +7,19 @@ import random
 import datetime
 import json
 import requests
-from apiapp.utils import (get_organized_data, create_query_params, get_update_create_data_to_save, get_data_ms, )
-from apiapp.models import DataPoint, Plant
-from apiapp.serializers import DataPointSerializer
+from nose.tools import assert_is_not_none
+from unittest.mock import Mock, patch
 
-# PULL_DATA_URL = reverse('apiapp:pull_data_ms')
+# from unittest.mock import Mock # needed for mocking the external service api response like Monitoring service
+from apiapp.utils import (get_organized_data, get_update_create_data_to_save, get_data_ms_for_test)
+from apiapp.models import DataPoint, Plant
+from .tasks import create_data_points_task, query_ms_every_day
+from .services import get_data_ms
+
+# PULL_DATA_URL = reverse('apiapp:pull_data_ms') # TODO error reverse
 MONITORING_SERVICE_URL = settings.MONITORING_SERVICE_URL
 TODAY = datetime.date.today()
 TEST_SIZE = 10000
-
-
-def get_data_ms_for_test(url, plant_id):
-    query_params = create_query_params(plant_id)
-    res_raw = requests.get(url + query_params)
-    return res_raw
 
 
 class MonitoringServiceTests(TestCase):
@@ -78,51 +77,53 @@ class DataPointApiTests(TestCase):
         else:
             assert "error" in res
 
-    def test_create_update_datapoints(self):
-        """
-        its tricky here , we need to separate create list from update list and run bulk_create and bulk_update separately
-        :return:
-        """
+    # def dummy_test_create_update_datapoints(self):
+    #     """
+    #     its tricky here , we need to separate create list from update list and run bulk_create and bulk_update separately
+    #
+    #     it should be using the api url to get expected result, not like this
+    #     :return:
+    #     """
+    #
+    #     # 1. get MS data
+    #     plant_ins = Plant.objects.get_or_create(id=4, defaults=dummy_plant())
+    #     plant_id = plant_ins[0].id
+    #     res_raw = get_data_ms_for_test(MONITORING_SERVICE_URL, plant_id)
+    #     res = json.loads(res_raw.content)
+    #     # 2. check if error dictionary
+    #     if isinstance(res, dict):
+    #         print("no data.......")
+    #         return
+    #     # 3. organize data:
+    #     data_list = get_organized_data(plant_id, res)
+    #
+    #     # 4. separate the create ones from the update ones
+    #     create_list, update_list = get_update_create_data_to_save(plant_id, data_list)
+    #     list__create_objs = [DataPoint(plant=plant_ins[0], **values) for values in create_list]
+    #     # 5. apply bulk_create & bulk_update
+    #     created_records = DataPoint.objects.bulk_create(
+    #         list__create_objs, batch_size=1000
+    #     )
+    #     print(created_records)
+    #
+    #     DataPoint.objects.bulk_update(
+    #         [
+    #             DataPoint(id=values.get("id"),
+    #                       energy_expected=values.get("energy_expected"),
+    #                       energy_oberved=values.get("energy_oberved"),
+    #                       irradiation_expected=values.get("irradiation_expected"),
+    #                       irradiation_observed=values.get("irradiation_observed"),
+    #                       )
+    #             for values in update_list
+    #         ],
+    #         ["energy_expected", "energy_observed", "irradiation_expected", "irradiation_observed"],
+    #         batch_size=1000
+    #     )
 
-        # 1. get MS data
-        plant_ins = Plant.objects.get_or_create(id=4, defaults=dummy_plant())
-        plant_id = plant_ins[0].id
-        res_raw = get_data_ms_for_test(MONITORING_SERVICE_URL, plant_id)
-        res = json.loads(res_raw.content)
-        # 2. check if error dictionary
-        if isinstance(res, dict):
-            print("no data.......")
-            return
-        # 3. organize data:
-        data_list = get_organized_data(plant_id, res)
-
-        # 4. separate the create ones from the update ones
-        create_list, update_list = get_update_create_data_to_save(data_list)
-        print(create_list)
-        list__create_objs = [DataPoint(plant=plant_ins[0], **values) for values in create_list]
-        # 5. apply bulk_create & bulk_update
-        created_records = DataPoint.objects.bulk_create(
-            list__create_objs, batch_size=1000
-        )
-
-        DataPoint.objects.bulk_update(
-            [
-                DataPoint(id=values.get("id"),
-                          energy_expected=values.get("energy_expected"),
-                          energy_oberved=values.get("energy_oberved"),
-                          irradiation_expected=values.get("irradiation_expected"),
-                          irradiation_observed=values.get("irradiation_observed"),
-                          )
-                for values in update_list
-            ],
-            ["energy_expected", "energy_observed", "irradiation_expected", "irradiation_observed"],
-            batch_size=1000
-        )
-
-    def create_update_datapoints2(self):
+    def tttttest_create_update_datapoints2(self):
 
         plant_ins = Plant.objects.create(name="test_me")
-        # data_point_create_url = f"http://localhost:8008/api/pull/{plant_ins.id}/2019-01-01/2019-02-01"
+        # data_point_create_url = f"http://localhost:8008/api/pull/{plant_ins.id}/2019-01-01/2019-02-01" # container connection issue
         data_point_create_url = reverse("data_point_create",
                                         kwargs={"plant_id": plant_ins.id, "from": "2019-01-01", "to": "2019-02-01"}
                                         )  # TODO FIXME no reverse match :(
@@ -144,7 +145,21 @@ class DataPointApiTests(TestCase):
             ),
             headers=headers
         )
-        print(response)
-        print(response.status_code)
         assert response.status_code == status.HTTP_201_CREATED
         assert len(response.json()) == TEST_SIZE
+
+    def test_tasks(self):
+        assert create_data_points_task.run(1)
+        assert create_data_points_task.create_task.run(2)
+        assert query_ms_every_day.create_task.run(3)
+
+    @patch('apiapp.services.requests.get')
+    def test_getting_ma_data(mock_get):
+        # Configure the mock
+        mock_get.return_value.ok = True
+        # Call the  service to get data, which will send a request to the monitoring server.
+        plant_ins = Plant.objects.get_or_create(id=4, defaults=dummy_plant())
+        response = get_data_ms(plant_ins[0].id)
+
+        # If  request is sent => then I expect a response.
+        assert_is_not_none(response)

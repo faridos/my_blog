@@ -7,6 +7,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'plants', PlantViewSet, basename='plant')
 urlpatterns = [
-    path('pull/<str:plant_id>/<str:from>/<str:to>', views.DataPointCreateView.as_view(), name='data_point_create')
+    path('pull/<str:plant_id>/<str:from_date>/<str:to_date>', views.DataPointCreateView.as_view(), name='data_point_create'),
+    path('check/<int:task_id>', views.check_result_task, name='check_result_task')
 ]
 urlpatterns += router.urls
