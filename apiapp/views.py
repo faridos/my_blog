@@ -48,20 +48,6 @@ class DataPointCreateView(generics.CreateAPIView):
         return JsonResponse(res_context, status=status.HTTP_200_OK)
 
 
-class DataPointReportsCreateView(generics.CreateAPIView):
-    """
-    API for pulling and saving data from monitoring service
-
-    """
-    serializer_class = DataPointSerializer
-    permission_classes = ()
-
-    def get(self, request, *args, **kwargs):
-        plant_ins = get_object_or_404(Plant, id=kwargs["plant_id"])
-
-        return JsonResponse({"success": True}, status=status.HTTP_200_OK)
-
-
 class PlantViewSet(viewsets.ModelViewSet):
     """
     APIs for CRUD a Solar plant; the si,plest zqw is to use q viewset
@@ -80,3 +66,4 @@ def check_result_task(request, task_id):
     """
     task = AsyncResult(task_id)
     return JsonResponse({"task_result": DataPointSerializer(task.get(), many=True).data if task.ready() else None})
+

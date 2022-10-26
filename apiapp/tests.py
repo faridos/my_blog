@@ -34,19 +34,6 @@ class MonitoringServiceTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
 
-def get_random_int(length):
-    ints = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    result_int = ''.join(random.choice(ints) for iii in range(length))
-    return result_int
-
-
-def dummy_plant():
-    # expandable list of fields in Plant Models
-    return {
-        'name': 'plant_' + get_random_int(4)
-    }
-
-
 class DataPointApiTests(TestCase):
     """test all Datapoint Apis"""
     urls = 'coreapp.urls'
@@ -77,50 +64,7 @@ class DataPointApiTests(TestCase):
         else:
             assert "error" in res
 
-    # def dummy_test_create_update_datapoints(self):
-    #     """
-    #     its tricky here , we need to separate create list from update list and run bulk_create and bulk_update separately
-    #
-    #     it should be using the api url to get expected result, not like this
-    #     :return:
-    #     """
-    #
-    #     # 1. get MS data
-    #     plant_ins = Plant.objects.get_or_create(id=4, defaults=dummy_plant())
-    #     plant_id = plant_ins[0].id
-    #     res_raw = get_data_ms_for_test(MONITORING_SERVICE_URL, plant_id)
-    #     res = json.loads(res_raw.content)
-    #     # 2. check if error dictionary
-    #     if isinstance(res, dict):
-    #         print("no data.......")
-    #         return
-    #     # 3. organize data:
-    #     data_list = get_organized_data(plant_id, res)
-    #
-    #     # 4. separate the create ones from the update ones
-    #     create_list, update_list = get_update_create_data_to_save(plant_id, data_list)
-    #     list__create_objs = [DataPoint(plant=plant_ins[0], **values) for values in create_list]
-    #     # 5. apply bulk_create & bulk_update
-    #     created_records = DataPoint.objects.bulk_create(
-    #         list__create_objs, batch_size=1000
-    #     )
-    #     print(created_records)
-    #
-    #     DataPoint.objects.bulk_update(
-    #         [
-    #             DataPoint(id=values.get("id"),
-    #                       energy_expected=values.get("energy_expected"),
-    #                       energy_oberved=values.get("energy_oberved"),
-    #                       irradiation_expected=values.get("irradiation_expected"),
-    #                       irradiation_observed=values.get("irradiation_observed"),
-    #                       )
-    #             for values in update_list
-    #         ],
-    #         ["energy_expected", "energy_observed", "irradiation_expected", "irradiation_observed"],
-    #         batch_size=1000
-    #     )
-
-    def tttttest_create_update_datapoints2(self):
+    def test_create_update_datapoints2(self):
 
         plant_ins = Plant.objects.create(name="test_me")
         # data_point_create_url = f"http://localhost:8008/api/pull/{plant_ins.id}/2019-01-01/2019-02-01" # container connection issue
@@ -163,3 +107,20 @@ class DataPointApiTests(TestCase):
 
         # If  request is sent => then I expect a response.
         assert_is_not_none(response)
+
+
+class ReportsGeneratorTests(TestCase):
+    pass
+
+
+def get_random_int(length):
+    ints = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+    result_int = ''.join(random.choice(ints) for iii in range(length))
+    return result_int
+
+
+def dummy_plant():
+    # expandable list of fields in Plant Models
+    return {
+        'name': 'plant_' + get_random_int(4)
+    }

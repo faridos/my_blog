@@ -30,3 +30,24 @@ class DataPoint(models.Model):
 
     class Meta:
         unique_together = ['plant', 'data_date', 'data_hour']  # in case some update needed, we make sure about unicity
+
+
+class BaseReport(models.Model):
+    """
+    base abstract class to use for generatingm ultiple reports, no need for db, maybe later
+    """
+    plant = models.ForeignKey(Plant,
+                              related_name='plant_reports',
+                              on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True  # no mapping to DB
+
+
+class MonthlyReport(BaseReport):
+    data_year = models.CharField(null=True, max_length=10)
+    data_month = models.CharField(null=True, max_length=10)
+    energy_expected = models.FloatField(null=True)
+    energy_observed = models.FloatField(null=True)
+    irradiation_expected = models.FloatField(null=True)
+    irradiation_observed = models.FloatField(null=True)

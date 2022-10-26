@@ -29,12 +29,11 @@ def query_ms_every_day_test():
     print(plants[0])
     # for plant in plants:
     res = get_data_ms(plants[0].id)
-    print("heeeeeeeeeeeey", res)
     if isinstance(res, list):
         data_list = get_organized_data(plants[0].id, res)
         return data_list
     else:
-        return "blablabla error"
+        return {'error': "Grand mama is angry!"}
 
 
 @celery_app.task
@@ -47,9 +46,8 @@ def query_ms_every_day():
         res = get_data_ms(plant.id)
         if isinstance(res, list):
             data_list = get_organized_data(plant.id, res)
-            res = Celery.execute.send_task("create_data_points_task",
-                                           kwargs={'plant_id': plant.id, 'data_list': data_list})
-            print(res.task_id, res.ready())
+            res = create_data_points_task(plant.id, data_list)
+            return res
         else:
             return {"is_data": False}  # if no data, nothing to do
 
@@ -85,3 +83,8 @@ def create_data_points_task(plant_id, data_list=None):
         except:
             # just finish the task with failure result
             return {"error": "something weird happened when collecting data for this plant id: %s" % plant_id}
+
+
+@celery_app.task
+def generate_reports():
+    pass
