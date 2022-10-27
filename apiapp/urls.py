@@ -12,7 +12,7 @@ urlpatterns = [
     path('pull/<str:plant_id>/<str:from_date>/<str:to_date>', views.DataPointCreateView.as_view(),
          name='data_point_create'),
     path('check/<int:task_id>', views.check_result_task, name='check_result_task'),
-    path('simple/monthly/report/<int:plant_id>/<int:x_months>', views_reports.MonthlyReportsCreateView.as_view(),
+    path('simple/monthly/report/<int:last_x_months>', views_reports.MonthlyReportsCreateView.as_view(),
          name='get_simple_monthly_report'),
 ]
 urlpatterns += router.urls

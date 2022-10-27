@@ -18,8 +18,8 @@ class DataPoint(models.Model):
     plant = models.ForeignKey(Plant,
                               related_name='plant_data',
                               on_delete=models.CASCADE)
-    data_date = models.DateField()
-    data_hour = models.CharField(max_length=10)
+    data_date = models.DateField(null=True )
+    data_hour = models.CharField(null=True, max_length=10)
     energy_expected = models.FloatField(null=True, default=0)
     energy_observed = models.FloatField(null=True, default=0)
     irradiation_expected = models.FloatField(null=True, default=0)
@@ -30,18 +30,6 @@ class DataPoint(models.Model):
 
     class Meta:
         unique_together = ['plant', 'data_date', 'data_hour']  # in case some update needed, we make sure about unicity
-
-
-class DailyReport(models.Model):
-    plant = models.ForeignKey(Plant,
-                              related_name='plant_daily_reports',
-                              on_delete=models.CASCADE)
-
-    data_date = models.CharField(max_length=10)
-    energy_expected = models.FloatField(default=0)
-    energy_observed = models.FloatField(default=0)
-    irradiation_expected = models.FloatField(default=0)
-    irradiation_observed = models.FloatField(default=0)
 
 
 class MonthlyReport(models.Model):

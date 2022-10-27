@@ -3,7 +3,7 @@ from datetime import timedelta, date
 from django.conf import settings
 from django.db import transaction
 
-from .models import Plant, DataPoint
+from .models import Plant, DataPoint, MonthlyReport, YearlyReport
 from coreapp.celery_app import app as celery_app
 import logging
 from .utils import *
@@ -105,14 +105,22 @@ def run_monthly_report_generator():
     for plant in plants:
         queryset = DataPoint.objects.filter(
             Q(plant=plant, data_date__year=date_previous_month.year, data_date__month=date_previous_month.month))
+        # if no queryset, we must fill it with default 0 values
+        if not queryset:
+            list_objs.append(MonthlyReport(
+                **{'plant': plant, 'data_month': date_previous_month.month, 'data_year': date_previous_month.year,
+                   **CONCERNED_FIELDS}))
+            continue
         sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
                                       energy_observed=Sum('energy_observed'),
                                       irradiation_expected=Sum('irradiation_expected'),
                                       irradiation_observed=Sum('irradiation_observed'))
-        # list_objs.append(MonthlyReport(**{'plant': plant, 'data_month': date_previous_month.month, 'data_year': date_previous_month.year, **sum_data}))
-    # MonthlyReport.objects.bulk_create(
-    #     list_objs, batch_size=1000
-    # )
+        list_objs.append(MonthlyReport(
+            **{'plant': plant, 'data_month': date_previous_month.month, 'data_year': date_previous_month.year,
+               **sum_data}))
+    MonthlyReport.objects.bulk_create(
+        list_objs, batch_size=1000
+    )
 
 
 @celery_app.task
@@ -125,18 +133,23 @@ def run_yearly_report_generator():
 
     plants = Plant.objects.all()
     list_objs = []
-    for plant in plants:
-        pass
-        # queryset = MonthlyReport.objects.filter(
-        #     Q(plant=plant, data_year=last_year))
-        # sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
-        #                               energy_observed=Sum('energy_observed'),
-        #                               irradiation_expected=Sum('irradiation_expected'),
-        #                               irradiation_observed=Sum('irradiation_observed'))
-        # list_objs.append(MonthlyReport(**{'plant': plant, 'data_year': TODAY.year, **sum_data}))
-    # YearlyReport.objects.bulk_create(
-    #     list_objs, batch_size=1000
-    # )
+    for plant in plants: # TODO better not do this brute solution, make query on every iteration :/
+        queryset = MonthlyReport.objects.filter(Q(plant=plant, data_year=last_year))
+        # if no queryset, we must fill it with default 0 values
+        if not queryset:
+            list_objs.append(MonthlyReport(
+                **{'plant': plant, 'data_year': TODAY.year,
+                   **CONCERNED_FIELDS}))
+            continue
+
+        sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
+                                      energy_observed=Sum('energy_observed'),
+                                      irradiation_expected=Sum('irradiation_expected'),
+                                      irradiation_observed=Sum('irradiation_observed'))
+        list_objs.append(MonthlyReport(**{'plant': plant, 'data_year': TODAY.year, **sum_data}))
+    YearlyReport.objects.bulk_create(
+        list_objs, batch_size=1000
+    )
 
 
 @celery_app.task
