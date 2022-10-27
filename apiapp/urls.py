@@ -14,7 +14,5 @@ urlpatterns = [
     path('check/<int:task_id>', views.check_result_task, name='check_result_task'),
     path('simple/monthly/report/<int:plant_id>/<int:x_months>', views_reports.MonthlyReportsCreateView.as_view(),
          name='get_simple_monthly_report'),
-    path('simple/yearly/report/<int:plant_id>/<int:year>', views_reports.YearlyReportsCreateView.as_view(),
-         name='get_simple_monthly_report'),
 ]
 urlpatterns += router.urls

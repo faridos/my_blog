@@ -10,6 +10,9 @@ from .utils import *
 from .serializers import DataPointSerializer
 from .services import get_data_ms
 import datetime
+from django.db.models import Avg, Count, Min, Sum
+from django.db.models import Q
+from dateutil.relativedelta import relativedelta
 
 logger = logging.getLogger(__name__)
 TODAY = datetime.date.today()
@@ -91,34 +94,56 @@ CONCERNED_FIELDS = {'energy_expected': 0, 'energy_observed': 0, 'irradiation_exp
 
 @celery_app.task
 def run_monthly_report_generator():
+    """
+    this periodic task runs first of the month , se we query data of previous month
+    collect sum of all CONCERNED_FIELDS in Datapoint for each solar plant
+    """
     plants = Plant.objects.all()
     list_objs = []
-    previous_month = TODAY
+
+    date_previous_month = date.today() - timedelta(1 * 365 / 12)
     for plant in plants:
         queryset = DataPoint.objects.filter(
-            Q(plant=plant, data_date__year=TODAY.year, data_date__month=TODAY.month))
+            Q(plant=plant, data_date__year=date_previous_month.year, data_date__month=date_previous_month.month))
         sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
                                       energy_observed=Sum('energy_observed'),
                                       irradiation_expected=Sum('irradiation_expected'),
                                       irradiation_observed=Sum('irradiation_observed'))
-        # list_objs.append(MonthlyReport(**{'plant': plant, 'data_month': TODAY.month, 'data_year': TODAY.year, **sum_data}))
+        # list_objs.append(MonthlyReport(**{'plant': plant, 'data_month': date_previous_month.month, 'data_year': date_previous_month.year, **sum_data}))
     # MonthlyReport.objects.bulk_create(
     #     list_objs, batch_size=1000
     # )
 
 
 @celery_app.task
-def run_daily_report_generator():
+def run_yearly_report_generator():
+    """
+        this periodic task runs first of the year , se we query data of previous year
+        collect sum of all CONCERNED_FIELDS in MonthlyReport for each solar plant
+        """
+    last_year = (datetime.datetime.now() - relativedelta(years=1)).date().year
+
     plants = Plant.objects.all()
     list_objs = []
     for plant in plants:
-        queryset = MonthlyReport.objects.filter(
-            Q(plant=plant, data_year=TODAY.year))
-        sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
-                                      energy_observed=Sum('energy_observed'),
-                                      irradiation_expected=Sum('irradiation_expected'),
-                                      irradiation_observed=Sum('irradiation_observed'))
+        pass
+        # queryset = MonthlyReport.objects.filter(
+        #     Q(plant=plant, data_year=last_year))
+        # sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
+        #                               energy_observed=Sum('energy_observed'),
+        #                               irradiation_expected=Sum('irradiation_expected'),
+        #                               irradiation_observed=Sum('irradiation_observed'))
         # list_objs.append(MonthlyReport(**{'plant': plant, 'data_year': TODAY.year, **sum_data}))
     # YearlyReport.objects.bulk_create(
     #     list_objs, batch_size=1000
     # )
+
+
+@celery_app.task
+def run_monthly_report_generator_pdf(pdf_file_name):
+    pass
+
+
+@celery_app.task
+def run_yearly_report_generator_pdf(pdf_file_name):
+    pass

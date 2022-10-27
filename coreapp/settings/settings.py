@@ -134,6 +134,16 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'apiapp.tasks.query_ms_every_day',
         'schedule': crontab(minute=3),
     },
+    'q_once_month': {
+        'task': 'apiapp.tasks.run_monthly_report_generator',
+        'schedule': crontab(minute=0, hour=0, day_of_month=1),
+    },
+
+    'q_once_year': {
+        'task': 'apiapp.tasks.run_yearly_report_generator',
+        'schedule': crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),
+    },
+
 }
 MONITORING_SERVICE_URL = 'http://monitoring_service:5000/'
 # MONITORING_SERVICE_URL = 'http://localhost:5000/'

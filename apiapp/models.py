@@ -32,38 +32,38 @@ class DataPoint(models.Model):
         unique_together = ['plant', 'data_date', 'data_hour']  # in case some update needed, we make sure about unicity
 
 
-# class DailyReport(models.Model):
-#     plant = models.ForeignKey(Plant,
-#                               related_name='plant_daily_reports',
-#                               on_delete=models.CASCADE)
-#
-#     data_date = models.CharField(max_length=10)
-#     energy_expected = models.FloatField(default=0)
-#     energy_observed = models.FloatField(default=0)
-#     irradiation_expected = models.FloatField(default=0)
-#     irradiation_observed = models.FloatField(default=0)
+class DailyReport(models.Model):
+    plant = models.ForeignKey(Plant,
+                              related_name='plant_daily_reports',
+                              on_delete=models.CASCADE)
+
+    data_date = models.CharField(max_length=10)
+    energy_expected = models.FloatField(default=0)
+    energy_observed = models.FloatField(default=0)
+    irradiation_expected = models.FloatField(default=0)
+    irradiation_observed = models.FloatField(default=0)
 
 
-# class MonthlyReport(models.Model):
-#     plant = models.ForeignKey(Plant,
-#                               related_name='plant_monthly_reports',
-#                               on_delete=models.CASCADE)
-#
-#     data_year = models.CharField(max_length=10)
-#     data_month = models.CharField(max_length=10)
-#     energy_expected = models.FloatField(default=0)
-#     energy_observed = models.FloatField(default=0)
-#     irradiation_expected = models.FloatField(default=0)
-#     irradiation_observed = models.FloatField(default=0)
+class MonthlyReport(models.Model):
+    plant = models.ForeignKey(Plant,
+                              related_name='plant_monthly_reports',
+                              on_delete=models.CASCADE)
+
+    data_year = models.CharField(max_length=10)
+    data_month = models.CharField(max_length=10)
+    energy_expected = models.FloatField(default=0)
+    energy_observed = models.FloatField(default=0)
+    irradiation_expected = models.FloatField(default=0)
+    irradiation_observed = models.FloatField(default=0)
 
 
-# class YearlyReport(models.Model):
-#     plant = models.ForeignKey(Plant,
-#                               related_name='plant_yearly_reports',
-#                               on_delete=models.CASCADE)
-#
-#     data_year = models.CharField(max_length=10)
-#     energy_expected = models.FloatField(default=0)
-#     energy_observed = models.FloatField(default=0)
-#     irradiation_expected = models.FloatField(default=0)
-#     irradiation_observed = models.FloatField(default=0)
+class YearlyReport(models.Model):
+    plant = models.ForeignKey(Plant,
+                              related_name='plant_yearly_reports',
+                              on_delete=models.CASCADE)
+
+    data_year = models.CharField(max_length=10)
+    energy_expected = models.FloatField(default=0)
+    energy_observed = models.FloatField(default=0)
+    irradiation_expected = models.FloatField(default=0)
+    irradiation_observed = models.FloatField(default=0)
