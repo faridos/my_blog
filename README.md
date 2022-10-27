@@ -2,8 +2,12 @@ here a simple makefile to run needed commands to install and go :
 
 - make migrate  # to have our DB tables ready
 - make createsuperuser  # to have our DB tables ready
-- make run-dev  # run dev compose
+- make run  # run dev compose
+- make collectstatic
+
+for p
 - make run-prod # run the production setup
+
 
 # How the app is served
 
@@ -14,9 +18,8 @@ Api base url : http://localhost:8008/api/
 Base url on prod: http://localhost
 
 
-Documenting the api : localhost:8008/redoc/
-
 docker, settings and requirements are seperated for prod and dev
+
 # URLS:
    - Datapoint: pull from MS and create/update data Api:
    
@@ -33,3 +36,14 @@ docker, settings and requirements are seperated for prod and dev
            
 # Documentation of the Apis:
   accessible via http://localhost:8008/redoc/
+  
+  
+#Takeaways
+due to my tight schedule and busy days i could not finish some tasks
+- i did not finish testing
+- i did not finish report generation, 
+  to make less headackes on server:
+  i just went with method of computing and saving all calculations needed in a seperate DB tables
+  then with needed specs , call an api , i use pandas/numpy/matplotlib to generate real pdf/images reports and download
+  them
+  
