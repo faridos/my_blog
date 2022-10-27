@@ -18,12 +18,12 @@ class DataPoint(models.Model):
     plant = models.ForeignKey(Plant,
                               related_name='plant_data',
                               on_delete=models.CASCADE)
-    data_date = models.DateField(null=True, )
-    data_hour = models.CharField(null=True, max_length=10)
-    energy_expected = models.FloatField(null=True)
-    energy_observed = models.FloatField(null=True)
-    irradiation_expected = models.FloatField(null=True)
-    irradiation_observed = models.FloatField(null=True)
+    data_date = models.DateField()
+    data_hour = models.CharField(max_length=10)
+    energy_expected = models.FloatField(null=True, default=0)
+    energy_observed = models.FloatField(null=True, default=0)
+    irradiation_expected = models.FloatField(null=True, default=0)
+    irradiation_observed = models.FloatField(null=True, default=0)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -32,22 +32,38 @@ class DataPoint(models.Model):
         unique_together = ['plant', 'data_date', 'data_hour']  # in case some update needed, we make sure about unicity
 
 
-class BaseReport(models.Model):
-    """
-    base abstract class to use for generatingm ultiple reports, no need for db, maybe later
-    """
-    plant = models.ForeignKey(Plant,
-                              related_name='plant_reports',
-                              on_delete=models.CASCADE)
+# class DailyReport(models.Model):
+#     plant = models.ForeignKey(Plant,
+#                               related_name='plant_daily_reports',
+#                               on_delete=models.CASCADE)
+#
+#     data_date = models.CharField(max_length=10)
+#     energy_expected = models.FloatField(default=0)
+#     energy_observed = models.FloatField(default=0)
+#     irradiation_expected = models.FloatField(default=0)
+#     irradiation_observed = models.FloatField(default=0)
 
-    class Meta:
-        abstract = True  # no mapping to DB
+
+# class MonthlyReport(models.Model):
+#     plant = models.ForeignKey(Plant,
+#                               related_name='plant_monthly_reports',
+#                               on_delete=models.CASCADE)
+#
+#     data_year = models.CharField(max_length=10)
+#     data_month = models.CharField(max_length=10)
+#     energy_expected = models.FloatField(default=0)
+#     energy_observed = models.FloatField(default=0)
+#     irradiation_expected = models.FloatField(default=0)
+#     irradiation_observed = models.FloatField(default=0)
 
 
-class MonthlyReport(BaseReport):
-    data_year = models.CharField(null=True, max_length=10)
-    data_month = models.CharField(null=True, max_length=10)
-    energy_expected = models.FloatField(null=True)
-    energy_observed = models.FloatField(null=True)
-    irradiation_expected = models.FloatField(null=True)
-    irradiation_observed = models.FloatField(null=True)
+# class YearlyReport(models.Model):
+#     plant = models.ForeignKey(Plant,
+#                               related_name='plant_yearly_reports',
+#                               on_delete=models.CASCADE)
+#
+#     data_year = models.CharField(max_length=10)
+#     energy_expected = models.FloatField(default=0)
+#     energy_observed = models.FloatField(default=0)
+#     irradiation_expected = models.FloatField(default=0)
+#     irradiation_observed = models.FloatField(default=0)

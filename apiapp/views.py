@@ -2,7 +2,6 @@ from rest_framework import generics
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from django.conf import settings
-from rest_framework.response import Response
 from rest_framework import status
 from celery.result import AsyncResult
 from django.http import JsonResponse
@@ -31,14 +30,10 @@ class DataPointCreateView(generics.CreateAPIView):
         if isinstance(res, dict) and "error" in res:
             return JsonResponse(res)
         data_list = get_organized_data(plant_ins.id, res)
-        create_list, update_list = get_update_create_data_to_save(plant_ins.id, data_list)
-        list__create_objs = [DataPoint(plant=plant_ins, **values) for values in create_list]
-        print("hahh daaamn create list........: ", list__create_objs)
-        print("hahh daaamn update_list list........: ", update_list)
         # do the job in queries
         res = create_data_points_task.delay(plant_ins.id, data_list)
         # if pulled data are created and ready , i return it,
-        # otherwise just return the task_id and result will be fetched via another api
+        # otherwise just return the task_id and result will be fetched via another api : check_result_task
         new_data = res.get() if res.ready() else None
         res_context = (
             {"task_result": DataPointSerializer(new_data, many=True).data, }

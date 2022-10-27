@@ -9,9 +9,10 @@ import logging
 from .utils import *
 from .serializers import DataPointSerializer
 from .services import get_data_ms
-from celery import Celery
+import datetime
 
 logger = logging.getLogger(__name__)
+TODAY = datetime.date.today()
 
 
 @celery_app.task
@@ -85,6 +86,39 @@ def create_data_points_task(plant_id, data_list=None):
             return {"error": "something weird happened when collecting data for this plant id: %s" % plant_id}
 
 
+CONCERNED_FIELDS = {'energy_expected': 0, 'energy_observed': 0, 'irradiation_expected': 0, 'irradiation_observed': 0}
+
+
 @celery_app.task
-def generate_reports():
-    pass
+def run_monthly_report_generator():
+    plants = Plant.objects.all()
+    list_objs = []
+    previous_month = TODAY
+    for plant in plants:
+        queryset = DataPoint.objects.filter(
+            Q(plant=plant, data_date__year=TODAY.year, data_date__month=TODAY.month))
+        sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
+                                      energy_observed=Sum('energy_observed'),
+                                      irradiation_expected=Sum('irradiation_expected'),
+                                      irradiation_observed=Sum('irradiation_observed'))
+        # list_objs.append(MonthlyReport(**{'plant': plant, 'data_month': TODAY.month, 'data_year': TODAY.year, **sum_data}))
+    # MonthlyReport.objects.bulk_create(
+    #     list_objs, batch_size=1000
+    # )
+
+
+@celery_app.task
+def run_daily_report_generator():
+    plants = Plant.objects.all()
+    list_objs = []
+    for plant in plants:
+        queryset = MonthlyReport.objects.filter(
+            Q(plant=plant, data_year=TODAY.year))
+        sum_data = queryset.aggregate(energy_expected=Sum('energy_expected'),
+                                      energy_observed=Sum('energy_observed'),
+                                      irradiation_expected=Sum('irradiation_expected'),
+                                      irradiation_observed=Sum('irradiation_observed'))
+        # list_objs.append(MonthlyReport(**{'plant': plant, 'data_year': TODAY.year, **sum_data}))
+    # YearlyReport.objects.bulk_create(
+    #     list_objs, batch_size=1000
+    # )
