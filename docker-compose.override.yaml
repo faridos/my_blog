@@ -18,6 +18,22 @@ services:
     image: 3megawatt/dev-recruiting-challenge-monitor
     ports:
       - 5000:5000
-#    networks:
-#      - main
+    networks:
+      - main
     hostname: monitoring_service
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: fm.maghraoui@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - main
+    restart: unless-stopped

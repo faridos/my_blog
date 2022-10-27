@@ -146,7 +146,6 @@ CELERY_BEAT_SCHEDULE = {
 
 }
 MONITORING_SERVICE_URL = 'http://monitoring_service:5000/'
-# MONITORING_SERVICE_URL = 'http://localhost:5000/'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = ['http://localhost']

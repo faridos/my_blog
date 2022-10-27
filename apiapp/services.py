@@ -18,7 +18,5 @@ def get_data_ms(plant_id, from_date=None, to_date=None):
     else:
         query_params = create_query_params(plant_id, from_date=YESTERDAY, to_date=TODAY)
     res_raw = requests.get(settings.MONITORING_SERVICE_URL + query_params)
-    res = json.loads(res_raw.content)  # always there is a response ok 200
-    print("................leenth of response raw...............", len(res))
-
+    res = json.loads(res_raw.content)  # always there is a response ok 200, hmmm intresting
     return res

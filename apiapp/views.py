@@ -19,6 +19,10 @@ MONITORING_SERVICE_URL = settings.MONITORING_SERVICE_URL
 class DataPointCreateView(generics.CreateAPIView):
     """
     API for pulling and saving data from monitoring service
+    1. get MS data using get_data_ms service
+    2. reorganize the data in order to save it in Backend DB
+    3. send the data ( assumed to be a lot to process) to a celery task
+    4. send task_id if result is not ready and fetch the result using another api , otherwise send task_result
 
     """
     serializer_class = DataPointSerializer
@@ -45,7 +49,7 @@ class DataPointCreateView(generics.CreateAPIView):
 
 class PlantViewSet(viewsets.ModelViewSet):
     """
-    APIs for CRUD a Solar plant; the si,plest zqw is to use q viewset
+    APIs for CRUD a Solar plant; the simplest way  to use is a viewset, no complications here
     """
     serializer_class = PlantSerializer
     queryset = Plant.objects.all()

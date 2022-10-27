@@ -30,7 +30,6 @@ def query_ms_every_day_test():
     every day this script run, it is enabled through settings Key: CELERY_BEAT_SCHEDULE
     """
     plants = Plant.objects.filter(id=1)
-    print(plants[0])
     # for plant in plants:
     res = get_data_ms(plants[0].id)
     if isinstance(res, list):
