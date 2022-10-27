@@ -29,3 +29,7 @@ docker, settings and requirements are seperated for prod and dev
    - Datapoint Report generation api :
    
            GET datapoint/monthly/report/<int:last_x_months>
+           
+           
+# Documentation of the Apis:
+  accessible via http://localhost:8008/redoc/
