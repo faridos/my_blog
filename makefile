@@ -10,3 +10,6 @@ migrate:
 	docker-compose run --rm app  python manage.py migrate
 createsuperuser:
 	docker-compose run --rm app python manage.py createsuperuser
+
+collectstatic:
+	docker-compose run --rm app python3 manage.py collectstatic

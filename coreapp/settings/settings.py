@@ -41,7 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_beat',
     'django_celery_results',
+
     'rest_framework',
+    # 'django.contrib.staticfiles',  # required for serving swagger ui's css/js files ==> TODO cause error weird
+    'drf_yasg',
+
     'apiapp',
 ]
 

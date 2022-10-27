@@ -5,11 +5,10 @@ from rest_framework.response import Response
 from django.db.models import Avg, Count, Min, Sum
 from rest_framework.views import APIView
 
-from .serializers import DataPointSerializer
+from .serializers import DataPointSerializer, DataPointRawSerializer
 from .models import Plant, DataPoint
 from .utils import *
 from .tasks import run_monthly_report_generator_pdf
-
 
 def get_report_name(number_x, monthly=None, yearly=None):
     # generate random file name
@@ -24,6 +23,7 @@ class MonthlyReportsCreateView(generics.ListAPIView):
 
      -
     """
+    serializer_class =  DataPointRawSerializer
     permission_classes = ()
 
     def get(self, request, *args, **kwargs):

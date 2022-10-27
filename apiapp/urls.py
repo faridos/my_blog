@@ -9,10 +9,10 @@ app_name = 'apiapp'
 router = DefaultRouter()
 router.register(r'plants', views.PlantViewSet, basename='plant')
 urlpatterns = [
-    path('pull/<str:plant_id>/<str:from_date>/<str:to_date>', views.DataPointCreateView.as_view(),
+    path('datapoint/<str:plant_id>/<str:from_date>/<str:to_date>', views.DataPointCreateView.as_view(),
          name='data_point_create'),
-    path('check/<int:task_id>', views.check_result_task, name='check_result_task'),
-    path('simple/monthly/report/<int:last_x_months>', views_reports.MonthlyReportsCreateView.as_view(),
+    path('datapoint/check/<str:task_id>', views.check_result_task, name='check_result_task'),
+    path('datapoint/monthly/report/<int:last_x_months>', views_reports.MonthlyReportsCreateView.as_view(),
          name='get_simple_monthly_report'),
 ]
 urlpatterns += router.urls

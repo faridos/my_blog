@@ -95,7 +95,7 @@ class DataPointApiTests(TestCase):
     def test_tasks(self):
         assert create_data_points_task.run(1)
         assert create_data_points_task.run(2)
-        assert query_ms_every_day.run(3)
+        assert query_ms_every_day.run()
 
     @patch('apiapp.services.requests.get')
     def test_getting_ma_data(mock_get):

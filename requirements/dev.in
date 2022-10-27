@@ -2,3 +2,4 @@
 ipython
 mock
 nose
+drf-yasg

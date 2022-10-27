@@ -7,7 +7,7 @@ from celery.result import AsyncResult
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 
-from .serializers import PlantSerializer, DataPointSerializer
+from .serializers import PlantSerializer, DataPointSerializer, DataPointRawSerializer
 from .models import Plant, DataPoint
 from .utils import *
 from .services import get_data_ms
@@ -25,7 +25,7 @@ class DataPointCreateView(generics.CreateAPIView):
     4. send task_id if result is not ready and fetch the result using another api , otherwise send task_result
 
     """
-    serializer_class = DataPointSerializer
+    serializer_class = DataPointRawSerializer
     permission_classes = ()
 
     def post(self, request, *args, **kwargs):
@@ -63,6 +63,7 @@ def check_result_task(request, task_id):
     :param task_id:
 
     """
-    task = AsyncResult(task_id)
+    task = AsyncResult(task_id)  # TODO test & check  me
+    if task.ready() and not task.get()["success"]:
+        return JsonResponse({"task_result": None})
     return JsonResponse({"task_result": DataPointSerializer(task.get(), many=True).data if task.ready() else None})
-
