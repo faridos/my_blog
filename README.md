@@ -18,7 +18,14 @@ Api base url : http://localhost:8008/api/
 Base url on prod: http://localhost
 
 
+# Documentation of the Apis:
+  accessible via dev  http://localhost:8008/redoc/
+  
+  accessible via prod  http://localhost/redoc/
+  
+  
 docker, settings and requirements are seperated for prod and dev
+    inside ./coreapp/settings/ 
 
 # Config and URL endpoints:
    - Datapoint: pull from MS and create/update data Api:
@@ -36,8 +43,9 @@ docker, settings and requirements are seperated for prod and dev
            
   - Periodic tasks are configured in settings via the key: CELERY_BEAT_SCHEDULE
             
-# Documentation of the Apis:
-  accessible via http://localhost:8008/redoc/
+
+  
+  
   
   
 #Take aways
