@@ -15,17 +15,17 @@ services:
     volumes:
       - static:/static
     labels:
-    # Frontend
+    # 
     - "traefik.enable=true"
     - "traefik.docker.network=traefik-proxy"
-    - "traefik.http.routers.frontend.rule=Host(`farid-blog.le-5ra.de`, `www.farid-blog.le-5ra.de`) "
-    - "traefik.http.routers.frontend.middlewares=secureHeaders@file"
-#      - "traefik.http.routers.frontend.entrypoints=websecure"
-    - "traefik.http.services.frontend.loadbalancer.server.port=8000"
-#      - "traefik.http.routers.frontend.service=frontend"
-    - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
-    - "traefik.http.routers.frontend.priority=900"
-    - "traefik.http.routers.frontend.tls=true"
+    - "traefik.http.routers.myblog.rule=Host(`farid-blog.le-5ra.de`, `www.farid-blog.le-5ra.de`) "
+    - "traefik.http.routers.myblog.middlewares=secureHeaders@file"
+#      - "traefik.http.routers.myblog.entrypoints=websecure"
+    - "traefik.http.services.myblog.loadbalancer.server.port=8000"
+#      - "traefik.http.routers.myblog.service=myblog"
+    - "traefik.http.routers.myblog.tls.certresolver=letsencrypt"
+    - "traefik.http.routers.myblog.priority=900"
+    - "traefik.http.routers.myblog.tls=true"
 
   nginx:
     #container_name: nginx
