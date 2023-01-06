@@ -18,8 +18,8 @@ services:
     image: 3megawatt/dev-recruiting-challenge-monitor
     ports:
       - 5000:5000
-    networks:
-      - main
+    # networks:
+    #   - main
     hostname: monitoring_service
 
   pgadmin:
@@ -34,6 +34,6 @@ services:
 
     ports:
       - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - main
+    # networks:
+    #   - main
     restart: unless-stopped

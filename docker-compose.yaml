@@ -10,8 +10,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    networks:
-      - main
+    # networks:
+    #   - main
     ports:
       - "5432:5432"
     restart: on-failure
@@ -30,8 +30,8 @@ services:
       - "8000"
     hostname: app
     image: blog-app-image
-    networks:
-      - main
+    # networks:
+    #   - main
     restart: on-failure
 
 volumes:
@@ -39,4 +39,6 @@ volumes:
   pgadmin:
 
 networks:
-  main:
+  default:
+    external:
+      name: traefik-proxy
