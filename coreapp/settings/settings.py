@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-from celery.schedules import crontab
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -39,14 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
-    'django_celery_results',
 
     'rest_framework',
     # 'django.contrib.staticfiles',  # required for serving swagger ui's css/js files ==> TODO cause error weird
-    'drf_yasg',
-
-    'apiapp',
+    
 ]
 
 MIDDLEWARE = [
@@ -130,26 +124,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static'
 
-# Celery config
-CELERY_BROKER_URL = 'pyamqp://rabbitmq:5672'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BEAT_SCHEDULE = {
-    'q_every_day': {
-        'task': 'apiapp.tasks.query_ms_every_day',
-        'schedule': crontab(minute=3),
-    },
-    'q_once_month': {
-        'task': 'apiapp.tasks.run_monthly_report_generator',
-        'schedule': crontab(minute=0, hour=0, day_of_month=1),
-    },
-
-    'q_once_year': {
-        'task': 'apiapp.tasks.run_yearly_report_generator',
-        'schedule': crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),
-    },
-
-}
 MONITORING_SERVICE_URL = 'http://monitoring_service:5000/'
 
 CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = ['http://localhost']
+
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": 'coreapp.custom_handlers.custom_exception_handler',
+
+}

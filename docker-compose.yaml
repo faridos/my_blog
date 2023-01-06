@@ -1,19 +1,9 @@
 version: '3.4'
 
 services:
-
-  rabbitmq:
-    container_name: rabbitmq
-    hostname: rabbitmq
-    image: rabbitmq:latest
-    networks:
-      - main
-    ports:
-      - "5672:5672"
-    restart: on-failure
-
+ 
   postgres:
-    container_name: postgres
+    #container_name: postgres
     hostname: postgres
     image: postgres:latest
     environment:
@@ -33,53 +23,16 @@ services:
       context: .
       dockerfile: docker/dev/Dockerfile
     command: sh -c "python manage.py collectstatic --no-input && python manage.py migrate && gunicorn coreapp.wsgi -b 0.0.0.0:8000"
-    container_name: app
+    #container_name: app
     depends_on:
       - postgres
-      - rabbitmq
     expose:
       - "8000"
     hostname: app
-    image: app-image
+    image: blog-app-image
     networks:
       - main
     restart: on-failure
-
-  celery_worker:
-    command: sh -c "celery -A coreapp worker -l info"
-    container_name: celery_worker
-    depends_on:
-      - app
-#      - postgres
-#      - rabbitmq
-    volumes:
-      - .:/app
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-
-    hostname: celery_worker
-    image: app-image
-    networks:
-      - main
-    restart: on-failure
-
-  celery_beat:
-    command: sh -c "celery -A coreapp beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
-    container_name: celery_beat
-    depends_on:
-      - app
-#      - postgres
-#      - rabbitmq
-    volumes:
-      - .:/app
-    hostname: celery_beat
-    image: app-image
-    networks:
-      - main
-    restart: on-failure
-
 
 volumes:
   postgresql-data:

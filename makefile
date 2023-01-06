@@ -1,5 +1,5 @@
-test:
-	docker-compose run --rm app python3 manage.py test # needed this way so it can spin up a DB along with app service.
+# test:
+# 	docker-compose run --rm app python3 manage.py test # needed this way so it can spin up a DB along with app service.
 
 run: # dev env
 	docker-compose  up
